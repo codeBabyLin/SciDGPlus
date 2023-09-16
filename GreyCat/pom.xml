@@ -12,4 +12,39 @@
     <artifactId>GreyCat</artifactId>
 
 
+    <properties>
+        <!--<greycat.version>5.1-SNAPSHOT</greycat.version>-->
+        <greycat.version>8.4</greycat.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.datathings</groupId>
+            <artifactId>greycat</artifactId>
+            <version>${greycat.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.datathings</groupId>
+            <artifactId>greycat-websocket</artifactId>
+            <version>${greycat.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.datathings</groupId>
+            <artifactId>greycat-ml</artifactId>
+            <version>${greycat.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.datathings</groupId>
+            <artifactId>greycat-leveldb</artifactId>
+            <version>${greycat.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
 </project>
