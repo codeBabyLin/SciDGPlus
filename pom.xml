@@ -17,6 +17,7 @@
     <modules>
         <module>benchmark</module>
         <module>ChronoGraph</module>
+        <module>GreyCat</module>
     </modules>
 
 
