@@ -19,6 +19,15 @@ public class TestGreyCat {
             n2.set("name", Type.STRING,"jojo");
             n1.addToRelation("know",n2);
 
+            Node finalN = n1;
+            Node finalN1 = n2;
+            graph.index(0,t1,"test", nodeIndex -> {
+                nodeIndex.addToIndex(finalN,"test");
+                nodeIndex.addToIndex(finalN1,"test");
+                graph.save(res->{});
+            });
+
+
             long t2 = 2;
             n1 = graph.newNode(0,t2);
             n1.set("name", Type.STRING,"haha");
@@ -31,6 +40,10 @@ public class TestGreyCat {
             n1.set("name", Type.STRING,"anan");
             n2 = graph.newNode(0,t1);
             n2.set("name", Type.STRING,"zukou");
+
+
+
+
 
         });
     }
@@ -46,18 +59,30 @@ public class TestGreyCat {
         long t3 = 3;
         graph.connect(isConnected->{
 
+            graph.index(0,System.currentTimeMillis(),"test",nodeIndex -> {
+                nodeIndex.find(new Callback<Node[]>() {
+                    @Override
+                    public void on(Node[] nodes) {
+                        for(Node n: nodes){
+                            System.out.print(n.get("name"));
+                        }
+                    }
+                });
+            });
            // graph.storage().
             //lookupAll(long world, long time, long[] ids, Callback<Node[]> callback)
-            long[] ids = new long[1];
+          /*  long[] ids = new long[1];
            graph.lookupAll(0,t2,ids, nodes->{
                for(Node n: nodes){
                   // n.get("name");
                    System.out.print(n.get("name"));
                }
 
-           });
+           });*/
 
         });
+
+
     }
 }
 
