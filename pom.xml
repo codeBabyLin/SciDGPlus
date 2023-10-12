@@ -19,6 +19,7 @@
         <module>ChronoGraph</module>
         <module>GreyCat</module>
         <module>Gradoop</module>
+        <module>GraphTrans</module>
     </modules>
 
 

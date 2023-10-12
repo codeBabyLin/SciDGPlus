@@ -80,18 +80,21 @@ public class PerformanceTest {
        //String path = univerPath;
 
 
-       // VersionGraphStore vgs = new ChronoStoreImpl(path);
+        //VersionGraphStore vgs = new ChronoStoreImpl(path);
         VersionGraphOperation vgo = new ChronoQueryImpl(path);
 
         PerformanceTest pft = new PerformanceTest();
 
+        long t1 = System.currentTimeMillis();
        // pft.storeCoauthor(vgs);
-      //  pft.storeDPPIN(vgs);
+       // pft.storeDPPIN(vgs);
         //pft.storeUniversity(vgs);
 
        // pft.testAuthor(vgo);
        pft.testPPIN(vgo);
        // pft.testUniversity(vgo);
+        long t2 = System.currentTimeMillis();
+        System.out.println(t2-t1);
 
     }
 }

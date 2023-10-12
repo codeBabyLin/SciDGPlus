@@ -1,3 +1,5 @@
+package TemporalSet;
+
 import org.gradoop.temporal.model.impl.pojo.TemporalEdge;
 
 import java.util.ArrayList;

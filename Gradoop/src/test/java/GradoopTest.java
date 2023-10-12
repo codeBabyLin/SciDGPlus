@@ -1,11 +1,19 @@
+import TemporalSet.TemporalEdgeSet;
+import TemporalSet.TemporalHeadSet;
+import TemporalSet.TemporalVertexSet;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.gradoop.common.model.impl.id.GradoopId;
+import org.gradoop.temporal.io.impl.csv.TemporalCSVDataSink;
 import org.gradoop.temporal.io.impl.csv.TemporalCSVDataSource;
 import org.gradoop.temporal.model.impl.TemporalGraph;
+import org.gradoop.temporal.model.impl.pojo.TemporalEdge;
+import org.gradoop.temporal.model.impl.pojo.TemporalGraphHead;
 import org.gradoop.temporal.model.impl.pojo.TemporalVertex;
 import org.gradoop.temporal.util.TemporalGradoopConfig;
 import org.junit.Test;
+
+import java.io.IOException;
 
 public class GradoopTest {
 
@@ -69,23 +77,76 @@ public class GradoopTest {
     }
 
     @Test
-    public void testConstruct(){
+    public void testConstruct() throws Exception {
 
         ExecutionEnvironment ENV = ExecutionEnvironment.createLocalEnvironment();
         TemporalGradoopConfig temporalConfig = TemporalGradoopConfig.createConfig(ENV);
 
 
+        String storePath = "./gradoop";
         //temporalConfig.getTemporalGraphCollectionFactory().
 
        /* DataSet<TemporalVertex > temporalVertices = new DataSet<TemporalVertex>() {
 
         }*/
 
-        DataSet<TemporalVertex> data = ENV.fromCollection(new TemporalVertexSet().getCollection());
+       TemporalVertexSet tvs = new TemporalVertexSet();
+        TemporalEdgeSet tes = new TemporalEdgeSet();
 
-        TemporalGraph graph = temporalConfig.getTemporalGraphFactory().createEmptyGraph();
+       TemporalVertex v1 = new TemporalVertex();
+       v1.setId(new GradoopId());
+       v1.setLabel("test");
+       v1.setValidFrom(1);
+       v1.setValidTo(5);
+       v1.setProperty("age",10);
 
-        temporalConfig.getTemporalGraphFactory();
+        TemporalVertex v2 = new TemporalVertex();
+        v2.setId(new GradoopId());
+        v2.setLabel("test");
+        v2.setValidFrom(3);
+        v2.setValidTo(8);
+        v2.setProperty("age",10);
+
+        tvs.add(v1);
+        tvs.add(v2);
+
+        TemporalEdge e = new TemporalEdge();
+        e.setSourceId(v1.getId());
+        e.setTargetId(v2.getId());
+        e.setId(new GradoopId());
+        e.setLabel("know");
+        e.setValidFrom(3);
+        e.setValidTo(5);
+
+        tes.add(e);
+
+
+        TemporalGraphHead h = new TemporalGraphHead();
+        h.setId(new GradoopId());
+        h.setLabel("g");
+        TemporalHeadSet ths = new TemporalHeadSet();
+        ths.add(h);
+
+
+        DataSet<TemporalGraphHead> data0 = ENV.fromCollection(ths.getCollection());
+
+        DataSet<TemporalVertex> data1 = ENV.fromCollection(tvs.getCollection());
+
+        DataSet<TemporalEdge> data2 = ENV.fromCollection(tes.getCollection());
+
+
+
+        TemporalGraph graph = temporalConfig.getTemporalGraphFactory().fromDataSets(data0,data1,data2);
+
+        TemporalCSVDataSink sink = new TemporalCSVDataSink(storePath, temporalConfig);
+
+        graph.writeTo(sink);
+
+        ENV.execute();
+
+        //TemporalGraph graph = temporalConfig.getTemporalGraphFactory().createEmptyGraph();
+
+        //temporalConfig.getTemporalGraphFactory();
         //DataSet<TemporalVertex> tvs = new DataSource<>();
        // DataSet<Tuple3<String, String, String>> metaData = (new CSVMetaDataSource()).readDistributed(this.getMetaDataPath(), this.getConfig());
        // DataSet<G> graphHeads = this.getConfig().getExecutionEnvironment().readTextFile(this.getGraphHeadCSVPath()).map(csvToGraphHead).withBroadcastSet(metaData, "metadata");
