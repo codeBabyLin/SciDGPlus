@@ -1,11 +1,10 @@
 package KVStore;
 
-import org.rocksdb.FlushOptions;
-import org.rocksdb.Holder;
-import org.rocksdb.RocksDB;
-import org.rocksdb.RocksIterator;
+import org.rocksdb.*;
 
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 public class RocksDBStorage {
     private RocksDB rockDB;
@@ -16,6 +15,21 @@ public class RocksDBStorage {
     public boolean exist(byte[]key){
         return rockDB.keyMayExist(key,new Holder<>());
     }
+
+    public void seek(byte[]prefix, Map<byte[],byte[]> data){
+        RocksIterator iter = this.rockDB.newIterator();
+        iter.seek(prefix);
+        //HashMap<byte[],byte[]> data = new HashMap<>();
+        while(iter.isValid()){
+
+            byte[] key = iter.key();
+            byte[]value = iter.value();
+            data.put(key,value);
+            iter.next();
+        }
+    }
+
+
     public byte[] get(byte[]key){
         byte[] res = null;
         try {

@@ -34,6 +34,15 @@ public class NameStore {
         }
     }
 
+    public boolean makeSureKeyExist(String key){
+        if(!this.nameId.containsKey(key)){
+            this.addName(key);
+        }
+        return true;
+    }
+    public boolean existKey(String key){
+        return this.nameId.containsKey(key);
+    }
 
     public String getNameById(long id){
         return this.idName.get(id);
@@ -52,12 +61,13 @@ public class NameStore {
         return newId;
     }
     public long deleteName(String name){
-        long id = this.nameId.get(name);
-        this.nameId.remove(name);
-        this.idName.remove(id);
-        byte[]key = transformer.LongToByte(id);
-        this.db.delete(key);
-        return id;
+        //long id = this.nameId.get(name);
+        //this.nameId.remove(name);
+        //this.idName.remove(id);
+        //byte[]key = transformer.LongToByte(id);
+        //this.db.delete(key);
+        //return id;
+        return this.currentId;
     }
 
 }
