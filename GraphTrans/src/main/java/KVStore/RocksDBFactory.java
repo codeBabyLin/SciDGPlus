@@ -8,6 +8,8 @@ import java.io.IOException;
 public class RocksDBFactory {
     static {
        //System.loadLibrary("librocksdbjni-win64.dll");
+        //System.getenv().put("ROCKSDB_SHAREDLIB_DIR","D:\\ROCKSDB_SHAREDLIB_DIR");
+       // RocksDB.loadLibrary(); //"librocksdbjni-win64"
         RocksDB.loadLibrary();
     }
     public static RocksDBStorage getDB(String path) {

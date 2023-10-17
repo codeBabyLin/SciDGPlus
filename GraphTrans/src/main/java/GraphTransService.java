@@ -21,4 +21,11 @@ public interface GraphTransService {
     Iterator<Long> getNodesByVersion(long start, long end);
     Iterator<Long> getRelationsByVersion(long start, long end);
 
+    //property
+
+   // void updateEntityProperty(long id, String key, Object value,long time);
+    //Object getEntityProperty(long id, String key, long time);
+
+
+
 }

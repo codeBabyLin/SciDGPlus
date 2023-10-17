@@ -1,4 +1,4 @@
-package welding;
+package Common;
 
 import Common.BaseSerializer;
 import io.netty.buffer.ByteBuf;
@@ -76,6 +76,12 @@ public class Transformer {
         long v1 = byteBuf.readLong();
         long v2 = byteBuf.readLong();
         return new long[]{v1,v2};
+    }
+    public Long[] ByteToVersionLong(byte[] data){
+        ByteBuf byteBuf  = Unpooled.copiedBuffer(data);
+        long v1 = byteBuf.readLong();
+        long v2 = byteBuf.readLong();
+        return new Long[]{v1,v2};
     }
 
     public long readTimeFromPropertyKey(byte[]data){
