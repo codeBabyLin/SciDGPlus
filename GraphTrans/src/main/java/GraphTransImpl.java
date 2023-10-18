@@ -1,104 +1,118 @@
 import kernel.BasicGraph;
 import welding.BigContinuousGraph;
+import welding.node.NodeDyStore;
+import welding.relation.RelationStore;
 
+import java.io.File;
 import java.util.Iterator;
 
 public class GraphTransImpl implements GraphTransService {
 
-
-    private BigContinuousGraph graph;
-    private String dataPath;
+    private NodeDyStore nodeDyStore;
+    private RelationStore relationStore;
 
     public GraphTransImpl(String dir){
-        this.dataPath = dir;
-        this.graph = new BigContinuousGraph(dir);
+        this.nodeDyStore = new NodeDyStore(new File(dir,"nodeStore").getAbsolutePath());
+        this.relationStore = new RelationStore(new File(dir,"relationStore").getAbsolutePath());
     }
 
     @Override
-    public void storeGraph(BasicGraph<Long, Long> graphInput, long version) {
-        Iterator<Long> iterNode = graphInput.AllNodes();
-        while(iterNode.hasNext()){
-            long node = iterNode.next();
-            if(this.graph.existNode(node)){
-                this.graph.deleteNode(node,version);
-            }
-            else{
-                this.graph.addNode(node,version);
-                this.graph.deleteNode(node,version);
-            }
-        }
-        Iterator<Long> iterRelation = graphInput.AllRelations();
-        while(iterRelation.hasNext()){
-            long relation = iterNode.next();
-            if(this.graph.existRelation(relation)){
-                this.graph.deleteRelation(relation,version);
-            }
-            else{
-                this.graph.addRelation(relation,version);
-                this.graph.deleteRelation(relation,version);
-            }
-        }
-
-
+    public void addNode_d(long node, long version) {
+        this.nodeDyStore.addNode_d(node,version);
     }
 
     @Override
-    public BasicGraph<Long, Long> getGraph(long version) {
-        BasicGraph<Long,Long> tempGraph = new BasicGraph<>();
-        Iterator<Long> nodeIter = this.getNodesByVersion(version);
-        while(nodeIter.hasNext()){
-            long node = nodeIter.next();
-            tempGraph.addNode(node);
-        }
-
-        Iterator<Long> relationIter = this.getNodesByVersion(version);
-        while(relationIter.hasNext()){
-            long relation = relationIter.next();
-            tempGraph.addRelation(relation);
-        }
-
-        return tempGraph;
-    }
-
-    @Override
-    public void addNode(long node, long version) {
-        this.graph.addNode(node,version);
+    public void addNode_c(long node, long version) {
+        this.nodeDyStore.addNode_C(node,version);
     }
 
     @Override
     public void deleteNode(long node, long version) {
-        this.graph.deleteNode(node,version);
-    }
-
-    @Override
-    public void addRelation(long relation, long version) {
-        this.graph.addRelation(relation,version);
-    }
-
-    @Override
-    public void deleteRelation(long relation, long version) {
-        this.graph.deleteRelation(relation,version);
+        this.nodeDyStore.deleteNode(node,version);
     }
 
     @Override
     public Iterator<Long> getNodesByVersion(long version) {
-        return this.graph.AllNodesByVersion(version);
-    }
-
-    @Override
-    public Iterator<Long> getRelationsByVersion(long version) {
-        return this.graph.AllRelationsByVersion(version);
+        return this.nodeDyStore.getNodesByVersion(version);
     }
 
     @Override
     public Iterator<Long> getNodesByVersion(long start, long end) {
-        return this.graph.AllNodesByVersion(start,end);
+        return this.nodeDyStore.getNodesByVersion(start,end);
     }
 
     @Override
-    public Iterator<Long> getRelationsByVersion(long start, long end) {
-        return this.graph.AllRelationsByVersion(start,end);
+    public void setNodeLabel(long node, String label) {
+        this.nodeDyStore.setNodeLabel(node,label);
     }
 
+    @Override
+    public String getNodeLabel(long node) {
+        return this.nodeDyStore.getNodeLabel(node);
+    }
 
+    @Override
+    public void updateNodeProperty(long node, String key, Object value, long time) {
+        this.nodeDyStore.updateEntityProperty(node, key, value, time);
+    }
+
+    @Override
+    public Object getNodeProperty(long node, String key, long time) {
+        return this.nodeDyStore.getEntityProperty(node, key, time);
+    }
+
+    @Override
+    public Object _getNodeProperty(long node, String key, long time) {
+        return this.nodeDyStore._getEntityProperty(node, key, time);
+    }
+
+    @Override
+    public void addRelation_d(long startNode, long endNode, long version) {
+        this.relationStore.addRelation_d(startNode, endNode, version);
+    }
+
+    @Override
+    public void addRelation_c(long startNode, long endNode, long version) {
+        this.relationStore.addRelation_c(startNode, endNode, version);
+    }
+
+    @Override
+    public void deleteRelation(long startNode, long endNode, long version) {
+        this.relationStore.deleteRelation(startNode, endNode, version);
+    }
+
+    @Override
+    public Iterator<Long[]> getRelationsByVersion(long version) {
+        return this.relationStore.getRelationsByVersion(version);
+    }
+
+    @Override
+    public Iterator<Long[]> getRelationsByVersion(long start, long end) {
+        return this.relationStore.getRelationsByVersion(start,end);
+    }
+
+    @Override
+    public void setRelationType(long startNode, long endNode, String type) {
+        this.relationStore.setRelationLabel(startNode, endNode, type);
+    }
+
+    @Override
+    public String getRelationType(long startNode, long endNode) {
+        return this.relationStore.getRelationLabel(startNode, endNode);
+    }
+
+    @Override
+    public void updateRelationProperty(long startNode, long endNode, String key, Object value, long time) {
+        this.relationStore.updateEntityProperty(startNode, endNode, key, value, time);
+    }
+
+    @Override
+    public Object getRelationProperty(long startNode, long endNode, String key, long time) {
+        return this.relationStore.getEntityProperty(startNode, endNode, key, time);
+    }
+
+    @Override
+    public Object _getRelationProperty(long startNode, long endNode, String key, long time) {
+        return this.relationStore._getEntityProperty(startNode, endNode, key, time);
+    }
 }
