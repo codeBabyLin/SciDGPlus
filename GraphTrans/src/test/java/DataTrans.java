@@ -9,6 +9,10 @@ import dataProvide.university.UniversityDataStore;
 import dataProvide.university.UniversityDataTestConfig;
 import operation.VersionGraphOperation;
 import operation.VersionGraphStore;
+import org.apache.flink.api.java.ExecutionEnvironment;
+import org.gradoop.temporal.io.impl.csv.TemporalCSVDataSource;
+import org.gradoop.temporal.model.impl.TemporalGraph;
+import org.gradoop.temporal.util.TemporalGradoopConfig;
 import org.junit.Test;
 
 public class DataTrans {
@@ -40,6 +44,26 @@ public class DataTrans {
     public void storeUniversity(VersionGraphStore vgs){
         uds.storeVersionGraph(vgs);
     }
+    //GraphTransService graphTransService
+    public void storeBike() {
+        ExecutionEnvironment ENV = ExecutionEnvironment.createLocalEnvironment();
+        TemporalGradoopConfig temporalConfig = TemporalGradoopConfig.createConfig(ENV);
+        //String path = this.getClass().getClassLoader().getResource("Example").getPath();
+        String path = System.getProperty("user.dir") + "\\Citibike-2018-30Stations";
+        System.out.println(path);
+        TemporalCSVDataSource source = new TemporalCSVDataSource(path, temporalConfig);
+        TemporalGraph graph = source.getTemporalGraph();
+        try{
+        int vSize = graph.getVertices().collect().size();
+        int eSize = graph.getEdges().collect().size();
+            System.out.println(vSize+ ": " + eSize);
+         }catch (Exception e){
+            e.printStackTrace();
+        }
+
+
+    }
+
 
     public void testAuthor(VersionGraphOperation vgo){
         CoauthorDataTestConfig qgc = new CoauthorDataTestConfig();
@@ -76,8 +100,14 @@ public class DataTrans {
     }
 
     @Test
-    public void citybike(){
+    public void university(){
+        GraphTransStoreImpl graphTransStore = new GraphTransStoreImpl(this.univerPath);
+        storeUniversity(graphTransStore);
+    }
 
+    @Test
+    public void citybike(){
+        storeBike();
     }
 
 
