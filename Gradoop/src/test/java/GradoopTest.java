@@ -4,6 +4,7 @@ import TemporalSet.TemporalVertexSet;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.gradoop.common.model.impl.id.GradoopId;
+import org.gradoop.common.model.impl.id.GradoopIdSet;
 import org.gradoop.temporal.io.impl.csv.TemporalCSVDataSink;
 import org.gradoop.temporal.io.impl.csv.TemporalCSVDataSource;
 import org.gradoop.temporal.model.impl.TemporalGraph;
@@ -90,22 +91,36 @@ public class GradoopTest {
 
         }*/
 
+       long tx1 = System.currentTimeMillis();
+       Thread.sleep(10);
+       long tx2 = System.currentTimeMillis();
+
+        GradoopIdSet  gradoopIds = new GradoopIdSet();
+        gradoopIds.add(GradoopId.get());
+
        TemporalVertexSet tvs = new TemporalVertexSet();
         TemporalEdgeSet tes = new TemporalEdgeSet();
 
        TemporalVertex v1 = new TemporalVertex();
-       v1.setId(new GradoopId());
+       v1.setId(GradoopId.fromString("000000000000000000000001"));
        v1.setLabel("test");
        v1.setValidFrom(1);
        v1.setValidTo(5);
+       v1.setTxFrom(tx1);
+       v1.setTxTo(tx2);
        v1.setProperty("age",10);
+       v1.setGraphIds(gradoopIds);
 
         TemporalVertex v2 = new TemporalVertex();
-        v2.setId(new GradoopId());
+        v2.setId(GradoopId.get());
         v2.setLabel("test");
+
+        v2.setTxFrom(tx1);
+        v2.setTxTo(tx2);
         v2.setValidFrom(3);
         v2.setValidTo(8);
         v2.setProperty("age",10);
+        v2.setGraphIds(gradoopIds);
 
         tvs.add(v1);
         tvs.add(v2);
@@ -113,17 +128,24 @@ public class GradoopTest {
         TemporalEdge e = new TemporalEdge();
         e.setSourceId(v1.getId());
         e.setTargetId(v2.getId());
-        e.setId(new GradoopId());
+        e.setId(GradoopId.get());
         e.setLabel("know");
+        e.setTxFrom(tx1);
+        e.setTxTo(tx2);
         e.setValidFrom(3);
         e.setValidTo(5);
+        e.setGraphIds(gradoopIds);
 
         tes.add(e);
 
 
         TemporalGraphHead h = new TemporalGraphHead();
-        h.setId(new GradoopId());
+        h.setId(GradoopId.get());
         h.setLabel("g");
+        h.setTxFrom(tx1);
+        h.setTxTo(tx2);
+        h.setValidFrom(1);
+        h.setValidTo(10);
         TemporalHeadSet ths = new TemporalHeadSet();
         ths.add(h);
 
@@ -134,6 +156,7 @@ public class GradoopTest {
 
         DataSet<TemporalEdge> data2 = ENV.fromCollection(tes.getCollection());
 
+        //data0.map().setSemanticProperties();
 
 
         TemporalGraph graph = temporalConfig.getTemporalGraphFactory().fromDataSets(data0,data1,data2);
