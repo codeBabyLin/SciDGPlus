@@ -6,6 +6,7 @@ import welding.property.PropertyDyStore;
 import welding.type.TypeStore;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Iterator;
 
 public class RelationStore {
@@ -107,6 +108,25 @@ public class RelationStore {
                 byte[]data = iter.next();
                 Long []e = transformer.ByteToVersionLong(data);
                 return e;
+            }
+        };
+    }
+
+    public Iterator<Long[]> AllRelationsWithVersion(){
+        Iterator<byte[]> iter = this.relationOutIdCStore.all();
+        return new Iterator<Long[]>() {
+            @Override
+            public boolean hasNext() {
+                return iter.hasNext();
+            }
+
+            @Override
+            public Long[] next() {
+                byte[]data = iter.next();
+                Long []e = transformer.ByteToVersionLong(data);
+                long start = transformer.ByteToLong(relationOutIdCStore.get(data));
+                long end = transformer.ByteToLong(relationOutIdDStore.get(data));
+                return new Long[]{e[0],e[1],start,end};
             }
         };
     }
@@ -250,5 +270,11 @@ public class RelationStore {
         return this.relationPropertyStore._getEntityProperty(id,key,time);
     }
 
+    public HashMap<String, HashMap<Long,Object>> getEntityProperty(long start, long end){
+        byte[]data1 = transformer.LongToByte(start);
+        byte[]data2 = transformer.LongToByte(end);
+        byte[]id = transformer.concatByteArray(data1,data2);
+        return this.relationPropertyStore.getEntityAllProperty(id);
+    }
 
 }

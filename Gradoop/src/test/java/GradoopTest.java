@@ -92,8 +92,8 @@ public class GradoopTest {
         }*/
 
        long tx1 = System.currentTimeMillis();
-       Thread.sleep(10);
-       long tx2 = System.currentTimeMillis();
+        Thread.sleep(10);
+        long tx2 = System.currentTimeMillis();
 
         GradoopIdSet  gradoopIds = new GradoopIdSet();
         gradoopIds.add(GradoopId.get());

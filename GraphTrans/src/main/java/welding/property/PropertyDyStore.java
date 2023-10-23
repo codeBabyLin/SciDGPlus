@@ -35,7 +35,7 @@ public class PropertyDyStore {
         byte[] tempkey = new byte[1];
         long tempTime = -1;
         for(byte[] key : data.keySet()){
-            long t1 = transformer.readTimeFromPropertyKey(key);
+            long t1 = transformer.readThirdLong(key);
             if(t1 == time) {
                 tempkey = key;
                 break;
@@ -97,7 +97,7 @@ public class PropertyDyStore {
         byte[] tempkey = new byte[1];
         long tempTime = -1;
         for(byte[] key : data.keySet()){
-            long t1 = transformer.readTimeFromPropertyKey(key);
+            long t1 = transformer.readThirdLong(key);
             if(t1 == time) {
                 tempkey = key;
                 break;
@@ -141,6 +141,25 @@ public class PropertyDyStore {
 
     }
 
+    public HashMap<String,HashMap<Long,Object>> getEntityAllProperty(byte[] id){
+        HashMap<String,HashMap<Long,Object>> properties = new HashMap<>();
+        HashMap<byte[],byte[]> data = new HashMap<>();
+        this.db.seek(id,data);
+
+        for(byte[] key : data.keySet()){
+            long keyId = transformer.readKeyFromByte(key);
+            String propertyName = this.nameStore.getNameById(keyId);
+            long t1 = transformer.readTimeFromByte(key);
+            byte[]value = data.get(key);
+            Object propertyValue = transformer.byteToObject(value);
+            if(!properties.containsKey(propertyName)){
+                properties.put(propertyName, new HashMap<>());
+            }
+            properties.get(propertyName).put(t1,propertyValue);
+        }
+        return properties;
+
+    }
 
 
 }

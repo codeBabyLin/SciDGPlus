@@ -84,13 +84,46 @@ public class Transformer {
         return new Long[]{v1,v2};
     }
 
-    public long readTimeFromPropertyKey(byte[]data){
+    public long readThirdLong(byte[]data){
         ByteBuf byteBuf  = Unpooled.copiedBuffer(data);
         long v1 = byteBuf.readLong();
         long v2 = byteBuf.readLong();
         long v3 = byteBuf.readLong();
         return v3;
     }
+    public long readSecondLong(byte[]data){
+        ByteBuf byteBuf  = Unpooled.copiedBuffer(data);
+        long v1 = byteBuf.readLong();
+        long v2 = byteBuf.readLong();
+        long v3 = byteBuf.readLong();
+        return v2;
+    }
+    public long readFirstLong(byte[]data){
+        ByteBuf byteBuf  = Unpooled.copiedBuffer(data);
+        long v1 = byteBuf.readLong();
+        long v2 = byteBuf.readLong();
+        long v3 = byteBuf.readLong();
+        return v1;
+    }
+
+    public long readFourthtLong(byte[]data){
+        ByteBuf byteBuf  = Unpooled.copiedBuffer(data);
+        long v1 = byteBuf.readLong();
+        long v2 = byteBuf.readLong();
+        long v3 = byteBuf.readLong();
+        long v4 = byteBuf.readLong();
+        return v4;
+    }
+
+    public long readKeyFromByte(byte[]data){
+       // long key =
+        return data.length==24?readSecondLong(data):readThirdLong(data);
+    }
+    public long readTimeFromByte(byte[]data){
+        return data.length==24?readThirdLong(data):readFourthtLong(data);
+    }
+
+
 
     public byte[] objectToByte(Object o){
         byteBuf.clear();

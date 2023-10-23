@@ -19,7 +19,8 @@ public class NameStore {
         this.nameId = new HashMap<>();
         this.idName = new HashMap<>();
         this.transformer = new Transformer();
-        this.currentId = 0;
+        //this.currentId = 0;
+        loadAll();
     }
     private void loadAll(){
         Iterator<byte[]> iter = this.db.All();

@@ -6,6 +6,7 @@ import welding.property.PropertyDyStore;
 import welding.type.TypeStore;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Iterator;
 
 public class NodeDyStore {
@@ -65,7 +66,24 @@ public class NodeDyStore {
             }
         };
     }
+    public Iterator<Long[]> AllNodesWithVersions(){
+        Iterator<byte[]> iter = this.nodeIdCStore.all();
+        return new Iterator<Long[]>() {
+            @Override
+            public boolean hasNext() {
+                return iter.hasNext();
+            }
 
+            @Override
+            public Long[] next() {
+                byte[]data = iter.next();
+                long e = transformer.ByteToLong(data);
+                long start = transformer.ByteToLong(nodeIdCStore.get(data));
+                long end = transformer.ByteToLong(nodeIdDStore.get(data));
+                return new Long[]{e,start,end};
+            }
+        };
+    }
 
     public void deleteNode(long node,long version){
         byte[]key = transformer.LongToByte(node);
@@ -190,6 +208,9 @@ public class NodeDyStore {
     }
     public Object _getEntityProperty(long id, String key, long time){
         return this.nodePropertyStore._getEntityProperty(id,key,time);
+    }
+    public HashMap<String, HashMap<Long,Object>> getEntityProperty(long id){
+        return this.nodePropertyStore.getEntityAllProperty(transformer.LongToByte(id));
     }
 
 
