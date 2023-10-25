@@ -1,5 +1,8 @@
-import GraphTrans.GraphTransImpl;
-import GraphTrans.GraphTransService;
+package DataTransPro;
+
+import DataTrans.DataTrans;
+import GraphTransPro.GraphTransProImpl;
+import GraphTransPro.GraphTransServicePro;
 import dataConfig.QueryGenerator;
 import dataConfig.QueryTest;
 import dataConfig.QueryTestImpl;
@@ -21,14 +24,14 @@ import org.gradoop.temporal.util.TemporalGradoopConfig;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicInteger;
 
-public class DataTrans {
+public class DataTransPro {
 
-
-    String coauthorPath = System.getProperty("user.dir")+"\\DynamicGraphStore\\GraphTrans\\author";
-    String ppinPath = System.getProperty("user.dir")+"\\DynamicGraphStore\\GraphTrans\\ppin";
-    String univerPath = System.getProperty("user.dir")+"\\DynamicGraphStore\\GraphTrans\\univer";
-    String bikePath = System.getProperty("user.dir")+"\\DynamicGraphStore\\GraphTrans\\bike";
+    String coauthorPath = System.getProperty("user.dir")+"\\DynamicGraphStore\\GraphTransPro\\author";
+    String ppinPath = System.getProperty("user.dir")+"\\DynamicGraphStore\\GraphTransPro\\ppin";
+    String univerPath = System.getProperty("user.dir")+"\\DynamicGraphStore\\GraphTransPro\\univer";
+    String bikePath = System.getProperty("user.dir")+"\\DynamicGraphStore\\GraphTransPro\\bike";
 
     //String path = ppinPath;
 
@@ -53,12 +56,16 @@ public class DataTrans {
         uds.storeVersionGraph(vgs);
     }
     //GraphTrans.GraphTransService graphTransService
-    public void storeBike(GraphTransService graphTrans) {
+    public void storeBike(GraphTransServicePro graphTrans) {
         ExecutionEnvironment ENV = ExecutionEnvironment.createLocalEnvironment();
         TemporalGradoopConfig temporalConfig = TemporalGradoopConfig.createConfig(ENV);
         //String path = this.getClass().getClassLoader().getResource("Example").getPath();
         String path = System.getProperty("user.dir") + "\\Citibike-2018-30Stations";
         System.out.println(path);
+
+        AtomicInteger idFactory = new AtomicInteger(1);
+
+
         TemporalCSVDataSource source = new TemporalCSVDataSource(path, temporalConfig);
         TemporalGraph graph = source.getTemporalGraph();
         HashMap<String, Long> idsStr = new HashMap<>();
@@ -89,15 +96,17 @@ public class DataTrans {
                 long endVersion = edge.getValidTo();
                 long startNode = idsStr.get(strSourceId);
                 long endNode = idsStr.get(strTargetId);
+                long relationId = idFactory.getAndIncrement();
+
                 String label = edge.getLabel();
 
-                graphTrans.addRelation_c(startNode,endNode,startVersion);
-                graphTrans.deleteRelation(startNode,endNode,endVersion);
-                graphTrans.setRelationType(startNode,endNode,label);
+                graphTrans.addRelation_c(relationId,startNode,endNode,startVersion);
+                graphTrans.deleteRelation(relationId,startNode,endNode,endVersion);
+                graphTrans.setRelationType(relationId,label);
                 Iterator<Property> iter = edge.getProperties().iterator();
                 while(iter.hasNext()){
                     Property p = iter.next();
-                    graphTrans.updateRelationProperty(startNode,endNode,p.getKey(),p.getValue().getObject(),startVersion);
+                    graphTrans.updateRelationProperty(relationId,p.getKey(),p.getValue().getObject(),startVersion);
                 }
 
             }
@@ -106,7 +115,7 @@ public class DataTrans {
             //int eSize = graph.getEdges().collect().size();
 
             //System.out.println(vSize+ ": " + eSize);
-         }catch (Exception e){
+        }catch (Exception e){
             e.printStackTrace();
         }
 
@@ -138,25 +147,25 @@ public class DataTrans {
     //@Test
     public void Dppin_store(){
 
-        GraphTransStoreImpl graphTransStore = new GraphTransStoreImpl(this.ppinPath);
+        GraphTransProStoreImpl graphTransStore = new GraphTransProStoreImpl(this.ppinPath);
         storeDPPIN(graphTransStore);
 
     }
-   // @Test
+    // @Test
     public void coauthor(){
-        GraphTransStoreImpl graphTransStore = new GraphTransStoreImpl(this.coauthorPath);
+        GraphTransProStoreImpl graphTransStore = new GraphTransProStoreImpl(this.coauthorPath);
         storeCoauthor(graphTransStore);
     }
 
-   // @Test
+    // @Test
     public void university(){
-        GraphTransStoreImpl graphTransStore = new GraphTransStoreImpl(this.univerPath);
+        GraphTransProStoreImpl graphTransStore = new GraphTransProStoreImpl(this.univerPath);
         storeUniversity(graphTransStore);
     }
 
-   // @Test
+    // @Test
     public void citybike(){
-        GraphTransService graphTrans = new GraphTransImpl(this.bikePath);
+        GraphTransServicePro graphTrans = new GraphTransProImpl(this.bikePath);
         storeBike(graphTrans);
     }
 
@@ -173,13 +182,20 @@ public class DataTrans {
 
     public static void main(String[]args){
 
-        DataTrans dataTrans = new DataTrans();
+        DataTransPro dataTrans = new DataTransPro();
 
-       // dataTrans.coauthor();
-        dataTrans.citybike();
-        //dataTrans.Dppin_store();
+       //  dataTrans.coauthor();
+       // dataTrans.citybike();
+        dataTrans.Dppin_store();
         //dataTrans.university();
+       // GraphTransServicePro graphTrans = new GraphTransProImpl(dataTrans.ppinPath);
+
+
+
+
+
     }
+
 
 
 }

@@ -2,6 +2,8 @@ package GraphTransInput;
 
 import GraphTrans.GraphTransImpl;
 import GraphTrans.GraphTransService;
+import GraphTransPro.GraphTransProImpl;
+import GraphTransPro.GraphTransServicePro;
 import TemporalSet.TemporalEdgeSet;
 import TemporalSet.TemporalHeadSet;
 import TemporalSet.TemporalVertexSet;
@@ -21,10 +23,10 @@ import java.util.Iterator;
 
 public class GradoopInputData {
 
-    String coauthorPath = System.getProperty("user.dir")+"\\DynamicGraphStore\\GraphTrans\\author";
-    String ppinPath = System.getProperty("user.dir")+"\\DynamicGraphStore\\GraphTrans\\ppin";
-    String univerPath = System.getProperty("user.dir")+"\\DynamicGraphStore\\GraphTrans\\univer";
-    String bikePath = System.getProperty("user.dir")+"\\DynamicGraphStore\\GraphTrans\\bike";
+    String coauthorPath = System.getProperty("user.dir")+"\\DynamicGraphStore\\GraphTransPro\\author";
+    String ppinPath = System.getProperty("user.dir")+"\\DynamicGraphStore\\GraphTransPro\\ppin";
+    String univerPath = System.getProperty("user.dir")+"\\DynamicGraphStore\\GraphTransPro\\univer";
+    String bikePath = System.getProperty("user.dir")+"\\DynamicGraphStore\\GraphTransPro\\bike";
 
     private String getGradoopIdFromLong(long id, int limit){
        String value = String.valueOf(id);
@@ -65,7 +67,7 @@ public class GradoopInputData {
         ths.add(h);
         return ENV.fromCollection(ths.getCollection());
     }
-    public DataSet<TemporalVertex> getVertexSet(ExecutionEnvironment ENV,GraphTransService service, GradoopIdSet gradoopIds){
+    public DataSet<TemporalVertex> getVertexSet(ExecutionEnvironment ENV,GraphTransServicePro service, GradoopIdSet gradoopIds){
         //ExecutionEnvironment ENV = ExecutionEnvironment.createLocalEnvironment();
         TemporalVertexSet nodeSet = new TemporalVertexSet();
         Iterator<Long[]> iter = service.allNodesWithVersions();
@@ -100,7 +102,7 @@ public class GradoopInputData {
     }
 
 
-    public DataSet<TemporalEdge> getEdgeSet(ExecutionEnvironment ENV,GraphTransService service, GradoopIdSet gradoopIds){
+    public DataSet<TemporalEdge> getEdgeSet(ExecutionEnvironment ENV,GraphTransServicePro service, GradoopIdSet gradoopIds){
         //ExecutionEnvironment ENV = ExecutionEnvironment.createLocalEnvironment();
         TemporalEdgeSet edgeSet = new TemporalEdgeSet();
         Iterator<Long[]> iter = service.allRelationsWithVersions();
@@ -108,12 +110,13 @@ public class GradoopInputData {
         long tx2 = System.currentTimeMillis();
         while(iter.hasNext()){
             Long[] data = iter.next();
-            long startNode = data[0];
-            long endNode = data[1];
-            long startVersion = data[2];
-            long endVersion = data[3];
-            String label = service.getRelationType(startNode,endNode);
-            HashMap<String, HashMap<Long,Object>> properties =service.getRelationProperty(startNode,endNode);
+            long relationId = data[0];
+            long startNode = data[1];
+            long endNode = data[2];
+            long startVersion = data[3];
+            long endVersion = data[4];
+            String label = service.getRelationType(relationId);
+            HashMap<String, HashMap<Long,Object>> properties =service.getRelationProperty(relationId);
 
             TemporalEdge edge = new TemporalEdge();
             edge.setId(getId(startNode,endNode));
@@ -137,7 +140,7 @@ public class GradoopInputData {
     }
 
 
-    public void storeData(long graphId,String graphName,String storePath, GraphTransService service){
+    public void storeData(long graphId,String graphName,String storePath, GraphTransServicePro service){
 
         ExecutionEnvironment ENV = ExecutionEnvironment.createLocalEnvironment();
         TemporalGradoopConfig temporalConfig = TemporalGradoopConfig.createConfig(ENV);
@@ -174,13 +177,13 @@ public class GradoopInputData {
     public static void main(String[]args){
 
         GradoopInputData data = new GradoopInputData();
-        GraphTransService graphTransService = new GraphTransImpl(data.bikePath);
+        GraphTransServicePro graphTransService = new GraphTransProImpl(data.ppinPath);
 
         long graphId = 100;
 
-        String storePath =  System.getProperty("user.dir")+"\\DynamicGraphStore\\Gradoop\\bike";
+        String storePath =  System.getProperty("user.dir")+"\\DynamicGraphStore\\Gradoop\\ppin";
 
-        data.storeData(graphId,"bike",storePath,graphTransService);
+        data.storeData(graphId,"ppin",storePath,graphTransService);
 
         //System.out.println(data.getGradoopIdFromLong(123));
        // String str = 24 * '3';

@@ -31,7 +31,7 @@ public class GraphTransProImpl implements GraphTransServicePro{
 
     @Override
     public void deleteNode(long node, long version) {
-        this.deleteNode(node, version);
+        this.nodeDyStore.deleteNode(node,version);
     }
 
     @Override
